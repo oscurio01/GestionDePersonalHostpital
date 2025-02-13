@@ -12,11 +12,16 @@ namespace GestionDePersonalHostpital
         public CargoAdministrativo CargoAdministrativo { get; set; }
         public string Departamento { get; set; }
         string HorarioDeTrabajo { get; set; }
-        public PersonalAdministrativo(int dNI, int edad, string nombre, string apellido, CargoAdministrativo cargoAdministrativo, string departamento, string horarioDeTrabajo) : base(dNI, edad, nombre, apellido)
+        public PersonalAdministrativo(Persona persona, CargoAdministrativo cargoAdministrativo, string departamento, string horarioDeTrabajo) : base(persona)
         {
             CargoAdministrativo = cargoAdministrativo;
             Departamento = departamento;
             HorarioDeTrabajo = horarioDeTrabajo;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $", Cargo administrarivo:{CargoAdministrativo}, departamento: {Departamento}, Horario de trabajo {HorarioDeTrabajo}";
         }
     }
 }

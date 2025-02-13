@@ -22,21 +22,31 @@ namespace GestionDePersonalHostpital
         Otorrinolaringolo}
     internal class Medico : Persona
     {
-        Especialidades Especialidad {  get; set; }
+        public Especialidades Especialidad {  get; set; }
         public List<Paciente> Pacientes { get; set; } = new List<Paciente>();
-        public Medico(int dNI, int edad, string nombre, string apellido, Especialidades especialidad) : base(dNI, edad, nombre, apellido)
+
+        public Medico(string dNI, int edad, string nombre, string apellido, Especialidades especialidad) : base(dNI, edad, nombre, apellido)
+        {
+            Especialidad = especialidad;
+        }
+
+        public Medico(Persona persona, Especialidades especialidad) : base(persona)
         {
             Especialidad = especialidad;
         }
 
         public override string ToString()
         {
-            return $"Medico: {Nombre} {Apellido}, edad {Edad}, especialidad {Especialidad}."; 
+            return base.ToString() + $", especialidad {Especialidad}."; 
         }
 
         public void AñadirPacientes(Paciente paciente)
         {
             Pacientes.Add(paciente);
+        }
+        public void AñadirPacientes(List<Paciente> pacientes)
+        {
+            Pacientes.AddRange(pacientes);
         }
 
         public void QuitarPaciente(Paciente paciente)
