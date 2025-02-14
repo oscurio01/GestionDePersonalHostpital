@@ -10,6 +10,7 @@ namespace GestionDePersonalHostpital
     {
         public string Sintoma { get; set; }
         public Medico medico;
+        public List<Cita> HistorialMedico { get; set; } = new List<Cita>();
 
         public Paciente(string dNI, int edad, string nombre, string apellido, int telefono, string sintoma, Medico medico = null) : base(dNI, edad, nombre, apellido, telefono)
         {
@@ -38,6 +39,17 @@ namespace GestionDePersonalHostpital
             return base.ToString() + (medico != null ? $", Sintomas {Sintoma} y tiene como medico: {medico.Nombre}." : $", Sintomas {Sintoma}.");
         }
 
-        
+        public void RegistrarHistorial(Cita historialMedico)
+        {
+            HistorialMedico.Add(historialMedico);
+        }
+
+        public void CancelarCita(DateTime fecha)
+        {
+            Cita citaAntigua = HistorialMedico.Where(h => h.Fecha == fecha).FirstOrDefault();
+
+            HistorialMedico.Remove(citaAntigua);
+        }
+
     }
 }
