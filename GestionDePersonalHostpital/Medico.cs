@@ -25,7 +25,7 @@ namespace GestionDePersonalHostpital
         public Especialidades Especialidad {  get; set; }
         public List<Paciente> Pacientes { get; set; } = new List<Paciente>();
 
-        public Medico(string dNI, int edad, string nombre, string apellido, Especialidades especialidad) : base(dNI, edad, nombre, apellido)
+        public Medico(string dNI, int edad, string nombre, string apellido, int telefono, Especialidades especialidad) : base(dNI, edad, nombre, apellido, telefono)
         {
             Especialidad = especialidad;
         }
@@ -40,7 +40,7 @@ namespace GestionDePersonalHostpital
             return base.ToString() + $", especialidad {Especialidad}."; 
         }
 
-        public void AñadirPacientes(Paciente paciente)
+        public void AñadirPaciente(Paciente paciente)
         {
             Pacientes.Add(paciente);
         }

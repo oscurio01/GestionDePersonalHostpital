@@ -11,12 +11,12 @@ namespace GestionDePersonalHostpital
     {
         static List<Persona> PersonasEnElHospital = new List<Persona>()
         {
-            new Medico("5552233B", 35, "Paco", "Gafotas", Especialidades.MedicoGeneral)
+            new Medico("5552233B", 35, "Paco", "Gafotas", 699999999, Especialidades.MedicoGeneral)
         };
         static bool Salir = true;
         static void Main(string[] args)
         {
-            int eleccion = 0;
+            int eleccion;
 
             while (Salir)
             {
@@ -24,17 +24,22 @@ namespace GestionDePersonalHostpital
                 Console.WriteLine(@"Que quieres hacer
 ==========================================
 1. Dar de alta un medico
-2. Dar de alta un paciente
-3. Dar de alta un personal administativo
-4. Listar los medicos
-5. Listar los paciente de un medico 
-6. Dar de baja un paciente
-7. Dar de baja un medico
-8. Ver la lista de personas en el hospital
+2. Modificar medico
+3. Dar de alta un paciente
+4. Modificar paciente
+5. Dar de alta un personal administativo
+6. Modificar personal administrativo
+7. Listar los medicos
+8. Listar los paciente de un medico 
+9. Dar de baja un paciente
+10. Dar de baja personal administrativo
+11. Dar de baja un medico
+12. Ver la lista de personas en el hospital
+13. Gestion de citas
 0. Para salir
 ==========================================
 ");
-                eleccion = LeerUnNumeroCorrecto(8, 0);
+                eleccion = LeerUnNumeroCorrecto(13, 0);
                 Console.Clear();
 
                 switch (eleccion)
@@ -42,29 +47,43 @@ namespace GestionDePersonalHostpital
                     case 1:
                         DarAltaMedico();
                         break;
-                    case 2: 
-                        DarAltaPaciente();
+                    case 2:
+                        ModificarDatosMedico();
                         break;
                     case 3:
-                        DarAltaPersonal();
+                        DarAltaPaciente(); 
                         break;
                     case 4:
-                        ListarMedicos();
+                        ModificarDatosPaciente();
                         break;
                     case 5:
-                        ListarPacientesDeMedico();
+                        DarAltaPersonal(); 
                         break;
                     case 6:
-                        DarDeBajaPaciente();
+                        ModificarDatosPersonalAdministrativo();
                         break;
                     case 7:
-                        DarDeBajaMedico();
+                        ListarMedicos(); 
                         break;
                     case 8:
-                        foreach(var personas in PersonasEnElHospital)
+                        ListarPacientesDeMedico(); 
+                        break;
+                    case 9:
+                        DarDeBajaPaciente();
+                        break;
+                    case 10:
+                        DarDeBajaAdministrativo();
+                        break;
+                    case 11:
+                        DarDeBajaMedico();
+                        break;
+                    case 12:
+                        foreach (var personas in PersonasEnElHospital)
                         {
                             Console.WriteLine(personas.ToString());
                         }
+                        break;
+                    case 13:
                         break;
                     case 0:
                         Salir = false;
@@ -89,7 +108,13 @@ namespace GestionDePersonalHostpital
             }
         }
 
-        
+        static void MostrarEspecialidadesMedico()
+        {
+            foreach (var esp in Enum.GetValues(typeof(Especialidades)))
+            {
+                Console.WriteLine($"{(int)esp + 1}. {esp}");
+            }
+        }
 
         static void DarAltaMedico()
         {
@@ -101,10 +126,7 @@ namespace GestionDePersonalHostpital
             p = Persona.DarAltaPersona(PersonasEnElHospital);
 
             Console.WriteLine("Dime en que se especializa");
-            foreach(var esp in Enum.GetValues(typeof(Especialidades)))
-            {
-                Console.WriteLine($"{(int)esp + 1}. {esp}");
-            }
+            MostrarEspecialidadesMedico();
             especialidad = (Especialidades)LeerUnNumeroCorrecto(Enum.GetValues(typeof(Especialidades)).Length-1, 1) - 1;
 
 
@@ -121,7 +143,6 @@ namespace GestionDePersonalHostpital
 
             string sintomas;
             Persona p;
-            List<Medico> listaMedicos = new List<Medico>();
 
             //Consigue los datos de una persona y los aplica al paciente
             p = Persona.DarAltaPersona(PersonasEnElHospital);
@@ -139,11 +160,19 @@ namespace GestionDePersonalHostpital
             if (medico != null)
             {
                 Paciente paciente = new Paciente(p, sintomas, medico);
-                medico.AñadirPacientes(paciente);
+                medico.AñadirPaciente(paciente);
                 PersonasEnElHospital.Add(paciente);
             }
             else
                 Console.WriteLine("No hay medicos");
+        }
+
+        static void MostrarCargosAdministrativos()
+        {
+            foreach (var esp in Enum.GetValues(typeof(CargoAdministrativo)))
+            {
+                Console.WriteLine($"{(int)esp + 1}. {esp}");
+            }
         }
 
         static void DarAltaPersonal()
@@ -156,10 +185,7 @@ namespace GestionDePersonalHostpital
             // Departamento HorarioDeTrabajo
             Console.WriteLine("Dime que cargo administrativo tiene:\n> ");
 
-            foreach (var esp in Enum.GetValues(typeof(CargoAdministrativo)))
-            {
-                Console.WriteLine($"{(int)esp + 1}. {esp}");
-            }
+            MostrarCargosAdministrativos();
             cargo = (CargoAdministrativo)LeerUnNumeroCorrecto(Enum.GetValues(typeof(CargoAdministrativo)).Length - 1, 1) - 1;
 
             Console.WriteLine("En que departamento esta:\n> ");
@@ -187,6 +213,22 @@ namespace GestionDePersonalHostpital
                 Console.WriteLine(persona.ToString());
             }
 
+        }
+
+        static void ListarPacientes()
+        {
+            foreach (var p in PersonasEnElHospital.OfType<Paciente>())
+            {
+                Console.WriteLine(p.ToString());
+            }
+        }
+
+        static void ListarPersonalAdministrativo()
+        {
+            foreach(var personal in PersonasEnElHospital.OfType<PersonalAdministrativo>())
+            {
+                Console.WriteLine(personal.ToString());
+            }
         }
 
         static void ListarPacientesDeMedico()
@@ -256,6 +298,30 @@ namespace GestionDePersonalHostpital
             PersonasEnElHospital.Remove(paciente);
         }
 
+        static void DarDeBajaAdministrativo()
+        {
+            if (!PersonasEnElHospital.OfType<PersonalAdministrativo>().Any())
+            {
+                Console.WriteLine("No existe mas personal administrativo");
+                return;
+            }
+
+            Console.WriteLine("Dime que personal quieres dar de baja, existen: ");
+
+            foreach (Persona persona in PersonasEnElHospital)
+            {
+                if (persona is PersonalAdministrativo p)
+                    Console.WriteLine(p.ToString());
+            }
+
+            Console.Write("Escribe su DNI\n> ");
+
+            PersonalAdministrativo personal = LeerDNIExacto<PersonalAdministrativo>();
+
+            Console.WriteLine("Se ha eliminado a {0}", personal.ToString());
+            PersonasEnElHospital.Remove(personal);
+        }
+
         static void DarDeBajaMedico()
         {
             if (!PersonasEnElHospital.OfType<Medico>().Any())
@@ -300,17 +366,237 @@ namespace GestionDePersonalHostpital
                 NuevoMedico.AñadirPacientes(medico.Pacientes);
             }
             // Si no hay mas medico los pacientes se quedan sin medicos y mueren
-            if(PersonasEnElHospital.OfType<Medico>().Count() != 1)
+            if(PersonasEnElHospital.OfType<Medico>().Count() == 1)
             {
                 foreach (var pacientes in medico.Pacientes)
                 {
                     pacientes.QuitarMedico();
+                    PersonasEnElHospital.Remove(pacientes);
                 }
             }
 
             Console.WriteLine("Se ha eliminado a {0}", medico.ToString());
             PersonasEnElHospital.Remove(medico);
 
+        }
+
+        static void MenuModificarPersona()
+        {
+            Console.Write(@"Dime que quieres Cambiar
+0. Salir   
+1. Dni
+2. Nombre
+3. Apellido
+4. Edad
+5. Telefono"
+           );
+        }
+
+        static void SwitchModificarPersona(int eleccion, ref bool salir, Persona persona)
+        {
+            switch (eleccion)
+            {
+                case 0:
+                    salir = false;
+                    break;
+                case 1:
+                    ModificarDNI(persona);
+                    break;
+                case 2:
+                    Console.WriteLine("Dime el nuevo nombre");
+                    persona.Nombre = Console.ReadLine();
+                    break;
+                case 3:
+                    Console.WriteLine("Dime el nuevo apellido");
+                    persona.Apellido = Console.ReadLine();
+                    break;
+                case 4:
+                    Console.WriteLine("Dime la edad");
+                    persona.Edad = LeerUnNumeroCorrecto(100, 0);
+                    break;
+                case 5:
+                    Console.WriteLine("Dime el nuevo telefono");
+                    persona.Telefono = LeerUnNumeroCorrecto(699999999, 600000000, "No existe numero de telefono en españa así");
+                    break;
+            }
+        }
+
+        static void ModificarDNI(Persona persona)
+        {
+            Console.WriteLine("Dime el nuevo DNI");
+            string dni = Console.ReadLine();
+                
+            Persona personaConEsteDNI = PersonasEnElHospital.OfType<Persona>()
+                .FirstOrDefault(m => string.Compare(m.DNI, dni, StringComparison
+                .OrdinalIgnoreCase) == 0);
+
+            // revisa y comprueba que no haya nadie con ese dni
+            if (personaConEsteDNI == null )
+                persona.DNI = dni;
+            else
+                Console.WriteLine("Ese DNI ya esta escogido elige otro");
+        }
+
+        static void ModificarDatosPaciente()
+        {
+            bool salir = true;
+            int eleccion;
+            Paciente paciente;
+
+            if (!PersonasEnElHospital.OfType<Paciente>().Any())
+            {
+                Console.WriteLine("No existen pacientes da de alta nuevos");
+                return;
+            }
+
+            Console.WriteLine("============== Modificar Paciente ==============");
+            ListarPacientes();
+
+            Console.WriteLine("Escribe el DNI del paciente que quieres modificar");
+            paciente = LeerDNIExacto<Paciente>();
+
+            while (salir)
+            {
+                Console.Clear();
+                Console.WriteLine(paciente.ToString());
+
+                MenuModificarPersona();
+                Console.WriteLine(@"
+6. Sintomas
+7. Medico
+");
+                eleccion = LeerUnNumeroCorrecto(7,0);
+                switch (eleccion)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        SwitchModificarPersona(eleccion, ref salir, paciente);
+                        break;
+                    case 6:
+                        Console.WriteLine("Dime los sintomas");
+                        paciente.Sintoma = Console.ReadLine();
+                        break;
+                    case 7:
+                        ListarMedicos();
+                        Console.WriteLine("Dime el DNI del nuevo medico");
+                        Medico antiguoMedico = paciente.medico;
+                        Medico nuevoMedico = LeerDNIExacto<Medico>(paciente.medico.DNI);
+
+                        antiguoMedico.QuitarPaciente(paciente);
+                        paciente.AñadirMedico(nuevoMedico); 
+                        break;
+                }
+            }
+        }
+
+        static void ModificarDatosMedico()
+        {
+            bool salir = true;
+            int eleccion;
+            Medico medico;
+
+            if (!PersonasEnElHospital.OfType<Medico>().Any())
+            {
+                Console.WriteLine("No existen medicos da de alta nuevos");
+                return;
+            }
+
+            Console.WriteLine("============== Modificar Medico ==============");
+            ListarMedicos();
+
+            Console.WriteLine("Escribe el DNI del medico que quieres modificar");
+            medico = LeerDNIExacto<Medico>();
+
+            while (salir)
+            {
+                Console.Clear();
+
+                Console.WriteLine(medico.ToString());
+
+                MenuModificarPersona();
+                Console.WriteLine(@"
+6. Especialidad
+");
+                eleccion = LeerUnNumeroCorrecto(7, 0);
+
+                switch (eleccion)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        SwitchModificarPersona(eleccion, ref salir, medico);
+                        break;
+                    case 6:
+                        Console.WriteLine("Elige la especialidad");
+                        MostrarEspecialidadesMedico();
+
+                        medico.Especialidad = (Especialidades)LeerUnNumeroCorrecto(Enum.GetValues(typeof(Especialidades)).Length - 1, 1) - 1;
+                        break;
+                }
+            }
+        }
+
+        static void ModificarDatosPersonalAdministrativo()
+        {
+            bool salir = true;
+
+            if (!PersonasEnElHospital.OfType<PersonalAdministrativo>().Any())
+            {
+                Console.WriteLine("No existen personales administrativos da de alta nuevos");
+                return;
+            }
+
+            Console.WriteLine("============== Modificar Personal Administrativo ==============");
+            ListarPersonalAdministrativo();
+
+            Console.WriteLine("Escribe el DNI del personal que quieres modificar");
+            PersonalAdministrativo personal = LeerDNIExacto<PersonalAdministrativo>();
+
+            while (salir)
+            {
+                Console.Clear();
+                Console.WriteLine(personal.ToString());
+
+                MenuModificarPersona();
+                Console.WriteLine(@"
+6. CargoAdministrativo
+7. Departamento
+8. Horario de trabajo
+");
+                int eleccion = LeerUnNumeroCorrecto(8, 0);
+
+                switch (eleccion)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        SwitchModificarPersona(eleccion, ref salir, personal);
+                        break;
+                    case 6:
+                        MostrarCargosAdministrativos();
+                        Console.WriteLine("Elige el cargo administrativo\n> ");
+                        personal.CargoAdministrativo = (CargoAdministrativo)LeerUnNumeroCorrecto(Enum.GetValues(typeof(CargoAdministrativo)).Length - 1, 1) - 1;
+                        break;
+                    case 7:
+                        Console.WriteLine("Escribe el departamento\n> ");
+                        personal.Departamento = Console.ReadLine();
+                        break;
+                    case 8:
+                        Console.WriteLine("Escribe el horario de trabajo\n> ");
+                        personal.HorarioDeTrabajo = Console.ReadLine();
+                        break;
+                }
+            }
         }
 
         static P LeerDNIExacto<P>(string excepcionDNI = "") where P : Persona
@@ -333,7 +619,7 @@ namespace GestionDePersonalHostpital
                 if (persona != null)
                     return persona;
                 else
-                    Console.WriteLine("No se encontraron médicos con el mismo DNI.");
+                    Console.WriteLine("No se encontraron personas con el mismo DNI.");
 
                 if(PersonasEnElHospital.OfType<P>().Count() <= 0)
                     salir = false;

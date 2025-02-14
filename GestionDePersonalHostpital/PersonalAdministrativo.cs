@@ -11,7 +11,7 @@ namespace GestionDePersonalHostpital
     {
         public CargoAdministrativo CargoAdministrativo { get; set; }
         public string Departamento { get; set; }
-        string HorarioDeTrabajo { get; set; }
+        public string HorarioDeTrabajo { get; set; }
         public PersonalAdministrativo(Persona persona, CargoAdministrativo cargoAdministrativo, string departamento, string horarioDeTrabajo) : base(persona)
         {
             CargoAdministrativo = cargoAdministrativo;

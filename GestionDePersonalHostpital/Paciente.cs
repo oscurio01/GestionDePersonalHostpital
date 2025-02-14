@@ -11,7 +11,7 @@ namespace GestionDePersonalHostpital
         public string Sintoma { get; set; }
         public Medico medico;
 
-        public Paciente(string dNI, int edad, string nombre, string apellido, string sintoma, Medico medico = null) : base(dNI, edad, nombre, apellido)
+        public Paciente(string dNI, int edad, string nombre, string apellido, int telefono, string sintoma, Medico medico = null) : base(dNI, edad, nombre, apellido, telefono)
         {
             Sintoma = sintoma;
             this.medico = medico;
@@ -37,5 +37,7 @@ namespace GestionDePersonalHostpital
         {
             return base.ToString() + (medico != null ? $", Sintomas {Sintoma} y tiene como medico: {medico.Nombre}." : $", Sintomas {Sintoma}.");
         }
+
+        
     }
 }
