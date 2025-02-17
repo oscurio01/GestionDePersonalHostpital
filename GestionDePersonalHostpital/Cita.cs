@@ -32,17 +32,34 @@ namespace GestionDePersonalHostpital
             Notas = cita.Notas;
         }
 
+        public override string ToString()
+        {
+            string texto = $"Cita {Fecha}, El paciente {Paciente.Nombre} con medico {Medico.Nombre}";
+            if(Diagnostico != string.Empty)
+            {
+                texto += $" Diagnostico {Diagnostico} y tratamiento {Tratamiento}";
+            }
+            return texto;
+        }
+
         public void ModificarFecha(DateTime fecha)
         {
             Fecha = fecha;
+        }
+
+        public void ModificarMedico(Medico medico)
+        {
+            if (Diagnostico == string.Empty)
+                Medico = medico;
+            else
+                Console.WriteLine("Lo siento pero ya hay un medico que ha escrito un informe, no se puede cambiar");
         }
 
         public void RegistrarDiagnosticoYTratamiento(string diagnostico, string tratamiento)
         {
             Diagnostico = diagnostico;
             Tratamiento = tratamiento;
-            // Aquí podemos registrar el diagnóstico y tratamiento en el historial médico del paciente.
-            Paciente.RegistrarHistorial(new Cita(this)); 
+            
         }
 
         public void AgregarNota(string nota)

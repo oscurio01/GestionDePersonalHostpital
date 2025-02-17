@@ -84,6 +84,7 @@ namespace GestionDePersonalHostpital
                         }
                         break;
                     case 13:
+                        GestionarCitas();
                         break;
                     case 0:
                         Salir = false;
@@ -596,6 +597,205 @@ namespace GestionDePersonalHostpital
                         personal.HorarioDeTrabajo = Console.ReadLine();
                         break;
                 }
+            }
+        }
+
+        static void GestionarCitas()
+        {
+            bool salir = true;
+            int eleccion = 0;
+            Paciente paciente;
+
+            if (!PersonasEnElHospital.OfType<Paciente>().Any())
+            {
+                Console.WriteLine("No hay ningun paciente");
+                return;
+            }
+            Console.WriteLine("Escribe el dni del paciente que quieres gestionar una cita");
+
+            foreach (var persona in PersonasEnElHospital.OfType<Paciente>())
+            {
+                Console.WriteLine(persona.ToString());
+            }
+
+            paciente = LeerDNIExacto<Paciente>();
+
+
+            while (salir)
+            {
+                Console.WriteLine(@"
+Que quieres hacer?
+1. Añadir cita
+2. Modificar cita
+3. Borrar cita
+4. Ver cita
+0. Salir");
+
+                eleccion = LeerUnNumeroCorrecto(4, 0);
+
+                switch (eleccion)
+                {
+                    case 1:
+                        AñadirCita(paciente);
+                        break;
+                    case 2:
+                        ModificarCita(paciente);
+                        break;
+                    case 3:
+                        BorrarCita(paciente);
+                        break;
+                    case 4:
+                        LeerCita(paciente);
+                        break;
+                    case 0:
+                        salir = false;
+                        break;
+                }
+            }
+        }
+
+        static void AñadirCita(Paciente paciente)
+        {
+            int eleccion = 0;
+            Cita cita;
+            DateTime fechaCorregida;
+
+            fechaCorregida = ComprobarPosicionDeFecha();
+
+            cita = new Cita(paciente, paciente.medico, fechaCorregida);
+
+            Console.WriteLine("Escribe el diagnostico y el tratamiento");
+
+            Console.Write("Prescribe el diagnostico\n> ");
+            string diagnostico = Console.ReadLine();
+
+            Console.Write("Prescribe el tratamiento\n> ");
+            string tratamiento = Console.ReadLine();
+            cita.RegistrarDiagnosticoYTratamiento(diagnostico, tratamiento);
+            
+
+            Console.WriteLine(@"Quieres añadir una nota?
+1. Si
+2. No");
+
+            eleccion = LeerUnNumeroCorrecto(2, 1);
+             
+            if(eleccion == 1)
+            {
+                string nota = Console.ReadLine();
+                cita.Notas.Add(nota);
+            }
+
+            paciente.RegistrarHistorial(cita);
+        }
+
+        static DateTime ComprobarPosicionDeFecha()
+        {
+            bool salir = true;
+            DateTime fechaCorregida;
+
+            Console.WriteLine("Escribe la fecha de esta manera AAAA/MM/dd hh:mm");
+
+            while (salir)
+            {
+                string fecha = Console.ReadLine();
+                if (DateTime.TryParseExact(fecha, "yyyy/MM/dd HH:mm", null, System.Globalization.DateTimeStyles.None, out fechaCorregida))
+                {
+                    salir = false;
+                    return fechaCorregida;
+                }
+                else
+                    Console.Write("No has escrito bien la fecha intentalo de nuevo:\n> ");
+            }
+
+            return new DateTime();
+        }
+
+        static void ModificarCita(Paciente paciente)
+        {
+            int eleccion = 0;
+            DateTime fecha = new DateTime();
+            DateTime nuevaFecha = new DateTime();
+            if(paciente.HistorialMedico.Count() == 0)
+            {
+                Console.WriteLine("No hay citas para modificar");
+                return;
+            }
+            LeerCita(paciente);
+
+            Console.WriteLine("Escribe la fecha de la cita para cambiar");
+            fecha = ComprobarPosicionDeFecha();
+
+            Console.WriteLine(@"Que quieres modificar?
+1. Fecha
+2. Medico
+3. agregar nota");
+
+            eleccion = LeerUnNumeroCorrecto(3,1);
+
+            switch (eleccion)
+            {
+                case 1:
+                    nuevaFecha = ComprobarPosicionDeFecha();
+                    Cita cita = paciente.HistorialMedico.FirstOrDefault(c => c.Fecha == fecha);
+                    cita.ModificarFecha(nuevaFecha);
+                    break;
+                case 2:
+                    ListarMedicos();
+                    Console.WriteLine("Dime el dni del medico");
+                    Medico medico = LeerDNIExacto<Medico>();
+
+                    paciente.HistorialMedico.FirstOrDefault(c => c.Fecha == fecha).ModificarMedico(medico);
+                    paciente.AñadirMedico(medico);
+                    break;
+                case 3:
+                    string nota = Console.ReadLine();
+                    paciente.HistorialMedico.FirstOrDefault(c => c.Fecha == fecha).AgregarNota(nota);
+                    break;
+            }
+
+        }
+
+        static void BorrarCita(Paciente paciente)
+        {
+            bool salir = true;
+            Cita cita;
+            DateTime fechaCorregida;
+
+            if (paciente.HistorialMedico.Count() == 0)
+            {
+                Console.WriteLine("No hay citas para borrar");
+                return;
+            }
+
+            Console.WriteLine("Cual de las citas quieres borrar? Escribe la fecha");
+            LeerCita(paciente);
+
+            while (salir)
+            {
+                fechaCorregida = ComprobarPosicionDeFecha();
+
+                cita = paciente.HistorialMedico.FirstOrDefault(c => c.Fecha == fechaCorregida);
+
+                if (cita != null)
+                {
+                    paciente.CancelarCita(fechaCorregida);
+                    salir = false;
+                }
+                else
+                    Console.WriteLine("No existe esa fecha prueba de nuevo");
+            }
+        }
+
+        static void LeerCita(Paciente paciente)
+        {
+            int indice = 0;
+            foreach(Cita cita in paciente.HistorialMedico)
+            {
+                Console.WriteLine(cita.ToString());
+                if (cita.Notas.Count() != 0)
+                    Console.Write(cita.Notas[indice]);
+                indice++;
             }
         }
 
